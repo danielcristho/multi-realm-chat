@@ -2,7 +2,7 @@
 
 ## Start Project
 
-Setup Environmnet
+### Setup Environmnet
 
 Linux
 
@@ -28,7 +28,7 @@ pip install -r requirements.txt
 
 ## Run UI
 
-Run using browser
+### Run using browser
 
 ```bash
 flet run --web ui
@@ -40,9 +40,9 @@ Jika di direktori `ui`
 flet run --web .
 ```
 
-Run as mobile (optional)
+### Run as mobile (optional)
 
-Install MPV
+Install MVP
 
 Linux
 
