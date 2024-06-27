@@ -26,6 +26,22 @@ Install requirements
 pip install -r requirements.txt
 ```
 
+## Run UI
+
+Run using browser
+
+```bash
+flet run --web ui
+```
+
+Jika di direktori `ui`
+
+```bash
+flet run --web .
+```
+
+Run as mobile (optional)
+
 Install MPV
 
 Linux
@@ -38,26 +54,12 @@ Windows
 
 Install from the official website [MVP](https://mpv.io)
 
-## Run UI
-
 ```bash
 cd ui
 ```
 
 ```bash
 flet run
-```
-
-Run using browser
-
-```bash
-flet run --web ui
-```
-
-Jika di direktori `ui`
-
-```bash
-flet run --web .
 ```
 
 Tampilan
