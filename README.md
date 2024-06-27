@@ -42,7 +42,7 @@ flet run --web .
 
 ### Run as mobile (optional)
 
-Install MVP
+Install MPV
 
 Linux
 
@@ -52,7 +52,7 @@ sudo apt install libmpv-dev mpv
 
 Windows
 
-Install from the official website [MVP](https://mpv.io)
+Install from the official website [MPV](https://mpv.io)
 
 ```bash
 cd ui
