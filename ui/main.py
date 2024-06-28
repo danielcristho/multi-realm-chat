@@ -1,125 +1,157 @@
 import flet as ft
-
-
-class Message:
-    def __init__(self, user_name: str, text: str, message_type: str):
-        self.user_name = user_name
-        self.text = text
-        self.message_type = message_type
-
-
-class ChatMessage(ft.Row):
-    def __init__(self, message: Message):
-        super().__init__()
-        self.vertical_alignment = ft.CrossAxisAlignment.START
-        self.controls = [
-            ft.CircleAvatar(
-                content=ft.Text(self.get_initials(message.user_name)),
-                color=ft.colors.WHITE,
-                bgcolor=self.get_avatar_color(message.user_name),
-            ),
-            ft.Column(
-                [
-                    ft.Text(message.user_name, weight="bold"),
-                    ft.Text(message.text, selectable=True),
-                ],
-                tight=True,
-                spacing=5,
-            ),
-        ]
-
-    def get_initials(self, user_name: str):
-        if user_name:
-            return user_name[:1].capitalize()
-        else:
-            return "Unknown"  # or any default value you prefer
-
-    def get_avatar_color(self, user_name: str):
-        colors_lookup = [
-            ft.colors.AMBER,
-            ft.colors.BLUE,
-            ft.colors.BROWN,
-            ft.colors.CYAN,
-            ft.colors.GREEN,
-            ft.colors.INDIGO,
-            ft.colors.LIME,
-            ft.colors.ORANGE,
-            ft.colors.PINK,
-            ft.colors.PURPLE,
-            ft.colors.RED,
-            ft.colors.TEAL,
-            ft.colors.YELLOW,
-        ]
-        return colors_lookup[hash(user_name) % len(colors_lookup)]
+from signin_form import *
+from signup_form import *
+from users_db import *
+from chat_message import *
 
 
 def main(page: ft.Page):
-    page.horizontal_alignment = ft.CrossAxisAlignment.STRETCH
-    page.title = "Flet Chat"
+    page.title = "Multi Realm Chat"
+    page.vertical_alignment = ft.MainAxisAlignment.CENTER
+    page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
 
-    def join_chat_click(e):
-        if not join_user_name.value:
-            join_user_name.error_text = "Name cannot be blank!"
-            join_user_name.update()
+    """
+    Functions
+    """
+    def dropdown_changed(e):
+        new_message.value = new_message.value + emoji_list.value
+        page.update()
+
+    def close_banner(e):
+        page.banner.open = False
+        page.update()
+
+    def open_dlg():
+        page.dialog = dlg
+        dlg.open = True
+        page.update()
+
+    def close_dlg(e):
+        dlg.open = False
+        page.route = "/"
+        page.update()
+
+    def sign_in(user: str, password: str):
+        db = UsersDB()
+        if not db.read_db(user, password):
+            print("User no exist ...")
+            page.banner.open = True
+            page.update()
         else:
-            page.session.set("user_name", join_user_name.value)
-            page.dialog.open = False
-            new_message.prefix = ft.Text(f"{join_user_name.value}: ")
+            print("Redirecting to chat...")
+            page.session.set("user", user)
+            page.route = "/chat"
             page.pubsub.send_all(
                 Message(
-                    user_name=join_user_name.value,
-                    text=f"{join_user_name.value} has joined the chat.",
+                    user=user,
+                    text=f"{user} has joined the chat.",
                     message_type="login_message",
                 )
             )
             page.update()
 
-    def send_message_click(e):
-        if new_message.value != "":
-            page.pubsub.send_all(
-                Message(
-                    page.session.get("user_name"),
-                    new_message.value,
-                    message_type="chat_message",
-                )
-            )
-            new_message.value = ""
-            new_message.focus()
-            page.update()
+    def sign_up(user: str, password: str):
+        db = UsersDB()
+        if db.write_db(user, password):
+            print("Successfully Registered User...")
+            open_dlg()
 
     def on_message(message: Message):
         if message.message_type == "chat_message":
             m = ChatMessage(message)
         elif message.message_type == "login_message":
-            m = ft.Text(message.text, italic=True, color=ft.colors.BLACK45, size=12)
+            m = ft.Text(message.text, italic=True, color=ft.colors.WHITE, size=12)
         chat.controls.append(m)
         page.update()
 
     page.pubsub.subscribe(on_message)
 
-    # A dialog asking for a user display name
-    join_user_name = ft.TextField(
-        label="Enter your name to join the chat",
-        autofocus=True,
-        on_submit=join_chat_click,
+    def send_message_click(e):
+        page.pubsub.send_all(
+            Message(
+                user=page.session.get("user"),
+                text=new_message.value,
+                message_type="chat_message",
+            )
+        )
+        new_message.value = ""
+        page.update()
+
+    def btn_signin(e):
+        page.route = "/"
+        page.update()
+
+    def btn_signup(e):
+        page.route = "/signup"
+        page.update()
+
+    def btn_exit(e):
+        page.session.remove("user")
+        page.route = "/"
+        page.update()
+
+
+    """
+    Aplication UI
+    """
+    principal_content = ft.Column(
+        [
+            # ft.Icon(ft.icons.WECHAT, size=200, color=ft.colors.BLUE),
+            ft.Text(value="Multi Realm Chat", size=50, color=ft.colors.WHITE),
+        ],
+        height=400,
+        width=600,
+        alignment=ft.MainAxisAlignment.CENTER,
+        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
     )
-    page.dialog = ft.AlertDialog(
-        open=True,
-        modal=True,
-        title=ft.Text("Welcome!"),
-        content=ft.Column([join_user_name], width=300, height=70, tight=True),
-        actions=[ft.ElevatedButton(text="Join chat", on_click=join_chat_click)],
-        actions_alignment=ft.MainAxisAlignment.END,
+    emoji_list = ft.Dropdown(
+        on_change=dropdown_changed,
+        options=[
+            ft.dropdown.Option("😃"),
+            ft.dropdown.Option("😊"),
+            ft.dropdown.Option("😂"),
+            ft.dropdown.Option("🤔"),
+            ft.dropdown.Option("😭"),
+            ft.dropdown.Option("😉"),
+            ft.dropdown.Option("🤩"),
+            ft.dropdown.Option("🥰"),
+            ft.dropdown.Option("😎"),
+            ft.dropdown.Option("❤️"),
+            ft.dropdown.Option("🔥"),
+            ft.dropdown.Option("✅"),
+            ft.dropdown.Option("✨"),
+            ft.dropdown.Option("👍"),
+            ft.dropdown.Option("🎉"),
+            ft.dropdown.Option("👉"),
+            ft.dropdown.Option("⭐"),
+            ft.dropdown.Option("☀️"),
+            ft.dropdown.Option("👀"),
+            ft.dropdown.Option("👇"),
+            ft.dropdown.Option("🚀"),
+            ft.dropdown.Option("🎂"),
+            ft.dropdown.Option("💕"),
+            ft.dropdown.Option("🏡"),
+            ft.dropdown.Option("🍎"),
+            ft.dropdown.Option("🎁"),
+            ft.dropdown.Option("💯"),
+            ft.dropdown.Option("💤"),
+        ],
+        width=50,
+        value="😃",
+        alignment=ft.alignment.center,
+        border_color=ft.colors.AMBER,
+        color=ft.colors.AMBER,
     )
 
-    # Chat messages
+    signin_UI = SignInForm(sign_in, btn_signup)
+    signup_UI = SignUpForm(sign_up, btn_signin)
+
     chat = ft.ListView(
         expand=True,
         spacing=10,
         auto_scroll=True,
     )
 
-    # A new message entry form
     new_message = ft.TextField(
         hint_text="Write a message...",
         autofocus=True,
@@ -131,25 +163,105 @@ def main(page: ft.Page):
         on_submit=send_message_click,
     )
 
-    # Add everything to the page
-    page.add(
-        ft.Container(
-            content=chat,
-            border=ft.border.all(1, ft.colors.OUTLINE),
-            border_radius=5,
-            padding=10,
-            expand=True,
-        ),
-        ft.Row(
-            [
-                new_message,
-                ft.IconButton(
-                    icon=ft.icons.SEND_ROUNDED,
-                    tooltip="Send message",
-                    on_click=send_message_click,
-                ),
-            ]
-        ),
+    page.banner = ft.Banner(
+        bgcolor=ft.colors.BLACK45,
+        leading=ft.Icon(ft.icons.ERROR, color=ft.colors.RED, size=40),
+        content=ft.Text("Log in failed, Incorrect User Name or Password"),
+        actions=[
+            ft.TextButton("Ok", on_click=close_banner),
+        ],
     )
 
-ft.app(target=main)
+    dlg = ft.AlertDialog(
+        modal=True,
+        title=ft.Container(
+            content=ft.Icon(
+                name=ft.icons.CHECK_CIRCLE_OUTLINED, color=ft.colors.GREEN, size=100
+            ),
+            width=120,
+            height=120,
+        ),
+        content=ft.Text(
+            value="Congratulations,\n your account has been successfully created\n Please Sign In",
+            text_align=ft.TextAlign.CENTER,
+        ),
+        actions=[
+            ft.ElevatedButton(
+                text="Continue", color=ft.colors.WHITE, on_click=close_dlg
+            )
+        ],
+        actions_alignment="center",
+        on_dismiss=lambda e: print("Dialog dismissed!"),
+    )
+
+    """
+    Routes
+    """
+    def route_change(route):
+        if page.route == "/":
+            page.clean()
+            page.add(
+                ft.Row(
+                    [principal_content, signin_UI],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                )
+            )
+
+        if page.route == "/signup":
+            page.clean()
+            page.add(
+                ft.Row(
+                    [principal_content, signup_UI],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                )
+            )
+
+        if page.route == "/chat":
+            if page.session.contains_key("user"):
+                page.clean()
+                page.add(
+                    ft.Row(
+                        [
+                            ft.Text(value="Multi Realm Chat", color=ft.colors.WHITE),
+                            ft.ElevatedButton(
+                                text="Log Out",
+                                bgcolor=ft.colors.RED_800,
+                                on_click=btn_exit,
+                            ),
+                        ],
+                        alignment=ft.MainAxisAlignment.SPACE_AROUND,
+                    )
+                )
+                page.add(
+                    ft.Container(
+                        content=chat,
+                        border=ft.border.all(1, ft.colors.OUTLINE),
+                        border_radius=5,
+                        padding=10,
+                        expand=True,
+                    )
+                )
+                page.add(
+                    ft.Row(
+                        controls=[
+                            emoji_list,
+                            new_message,
+                            ft.IconButton(
+                                icon=ft.icons.SEND_ROUNDED,
+                                tooltip="Send message",
+                                on_click=send_message_click,
+                            ),
+                        ],
+                    )
+                )
+
+            else:
+                page.route = "/"
+                page.update()
+
+    page.on_route_change = route_change
+    page.add(
+        ft.Row([principal_content, signin_UI], alignment=ft.MainAxisAlignment.CENTER)
+    )
+
+ft.app(target=main, view=ft.WEB_BROWSER)
