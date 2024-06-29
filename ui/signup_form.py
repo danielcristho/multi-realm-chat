@@ -9,7 +9,6 @@ class SignUpForm(ft.UserControl):
         #Route to signup Form
         self.btn_signin = btn_signin
 
-
     def btn_signup(self, e):
         if not self.text_user.value:
             self.text_user.error_text="Name cannot be blank!"
@@ -17,6 +16,9 @@ class SignUpForm(ft.UserControl):
         if not self.text_password.value:
             self.text_password.error_text="Password cannot be blank!"
             self.text_password.update()
+        if not self.dropdown_realm.value:
+            self.dropdown_realm.error_text="Please input your realm!"
+            self.dropdown_realm.update()
         else:
             #Return values 'user' and 'password' as arguments
             self.submit_values(self.text_user.value,self.text_password.value)
@@ -26,13 +28,21 @@ class SignUpForm(ft.UserControl):
         self.text_password = ft.TextField(
             label="Password", password=True, can_reveal_password=True
         )
+        self.dropdown_realm = ft.Dropdown(
+            label="Choose Your Realm",
+            options=[
+                ft.dropdown.Option("EarthRealm"),
+                ft.dropdown.Option("Edenia"),
+                ft.dropdown.Option("NetherRealm"),
+            ]
+        )
         self.text_signup=ft.ElevatedButton(text="Sign up",color=ft.colors.WHITE,width=150,height=50,on_click= self.btn_signup)
         self.text_signin=ft.Row(controls=[ft.Text(value="Already have an account?"),ft.TextButton(text="Sign in",on_click=self.btn_signin)],alignment=ft.MainAxisAlignment.CENTER)
 
         return ft.Container(
             width=500,
             height=560,
-            bgcolor=ft.colors.TEAL_800,
+            bgcolor=ft.colors.TEAL_400,
             padding=30,
             border_radius=10,
             alignment=ft.alignment.center,
@@ -42,6 +52,7 @@ class SignUpForm(ft.UserControl):
                     ft.Container(height=30),
                     self.text_user,
                     self.text_password,
+                    self.dropdown_realm,
                     ft.Container(height=10),
                     self.text_signup,
                     ft.Container(height=20),

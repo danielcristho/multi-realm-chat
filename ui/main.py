@@ -3,16 +3,32 @@ from signin_form import *
 from signup_form import *
 from users_db import *
 from chat_message import *
+import socket
+import json
 
+server_ip = '127.0.0.1'
+server_port = 8889
+
+client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+client_socket.connect((server_ip, server_port))
+
+def send_to_server(message):
+    client_socket.sendall((message + '\r\n').encode())
+    response = ""
+    while True:
+        data = client_socket.recv(32)
+        if data:
+            response += data.decode()
+            if response[-2:] == '\r\n':
+                break
+    return response.strip()
 
 def main(page: ft.Page):
     page.title = "Multi Realm Chat"
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
 
-    """
-    Functions
-    """
+    # Functions
     def dropdown_changed(e):
         new_message.value = new_message.value + emoji_list.value
         page.update()
@@ -48,6 +64,7 @@ def main(page: ft.Page):
                     message_type="login_message",
                 )
             )
+            send_to_server(json.dumps({"type": "login", "user": user}))
             page.update()
 
     def sign_up(user: str, password: str):
@@ -55,6 +72,7 @@ def main(page: ft.Page):
         if db.write_db(user, password):
             print("Successfully Registered User...")
             open_dlg()
+            send_to_server(json.dumps({"type": "signup", "user": user}))
 
     def on_message(message: Message):
         if message.message_type == "chat_message":
@@ -67,13 +85,15 @@ def main(page: ft.Page):
     page.pubsub.subscribe(on_message)
 
     def send_message_click(e):
+        message = new_message.value
         page.pubsub.send_all(
             Message(
                 user=page.session.get("user"),
-                text=new_message.value,
+                text=message,
                 message_type="chat_message",
             )
         )
+        send_to_server(json.dumps({"type": "message", "user": page.session.get("user"), "message": message}))
         new_message.value = ""
         page.update()
 
@@ -92,15 +112,12 @@ def main(page: ft.Page):
 
 
     """
-    Aplication UI
+    Application UI
     """
     principal_content = ft.Column(
         [
-            # ft.Icon(ft.icons.WECHAT, size=200, color=ft.colors.BLUE),
             ft.Text(value="Multi Realm Chat", size=50, color=ft.colors.WHITE),
         ],
-        height=400,
-        width=600,
         alignment=ft.MainAxisAlignment.CENTER,
         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
     )
@@ -201,18 +218,26 @@ def main(page: ft.Page):
         if page.route == "/":
             page.clean()
             page.add(
-                ft.Row(
-                    [principal_content, signin_UI],
+                ft.Column(
+                    [
+                        principal_content,
+                        signin_UI
+                    ],
                     alignment=ft.MainAxisAlignment.CENTER,
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER
                 )
             )
 
         if page.route == "/signup":
             page.clean()
             page.add(
-                ft.Row(
-                    [principal_content, signup_UI],
+                ft.Column(
+                    [
+                        principal_content,
+                        signup_UI
+                    ],
                     alignment=ft.MainAxisAlignment.CENTER,
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER
                 )
             )
 
@@ -261,7 +286,14 @@ def main(page: ft.Page):
 
     page.on_route_change = route_change
     page.add(
-        ft.Row([principal_content, signin_UI], alignment=ft.MainAxisAlignment.CENTER)
+        ft.Column(
+            [
+                principal_content,
+                signin_UI
+            ],
+            alignment=ft.MainAxisAlignment.CENTER,
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER
+        )
     )
 
 ft.app(target=main, view=ft.WEB_BROWSER)
