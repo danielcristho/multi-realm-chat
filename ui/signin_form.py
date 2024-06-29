@@ -16,6 +16,9 @@ class SignInForm(ft.UserControl):
         if not self.text_password.value:
             self.text_password.error_text="Password cannot be blank!"
             self.text_password.update()
+        if not self.dropdown_realm.value:
+            self.dropdown_realm.error_text="Please input your realm!"
+            self.dropdown_realm.update()
         else:
             #Return values 'user' and 'password' as arguments
             self.submit_values(self.text_user.value,self.text_password.value)
@@ -34,9 +37,18 @@ class SignInForm(ft.UserControl):
         self.text_password = ft.TextField(
             label="Password", password=True, can_reveal_password=True
         )
-        self.text_signin=ft.ElevatedButton(text="Sign in",color=ft.colors.WHITE,width=150,height=50,on_click= self.btn_signin)
+        self.dropdown_realm = ft.Dropdown(
+            label="Choose Realm",
+            options=[
+                ft.dropdown.Option("EarthRealm"),
+                ft.dropdown.Option("Edenia"),
+                ft.dropdown.Option("NetherRealm"),
+            ]
+        )
+
         self.text_signup=ft.Row(controls=[ft.Text(value="Don't have a account?"),ft.TextButton(text="Sing Up Here",on_click=self.btn_signup)],alignment=ft.MainAxisAlignment.CENTER)
 
+        self.text_signin=ft.ElevatedButton(text="Sign in",color=ft.colors.WHITE,width=150,height=50,on_click= self.btn_signin)
         return ft.Container(
             width=500,
             height=560,
@@ -50,6 +62,7 @@ class SignInForm(ft.UserControl):
                     self.title_form,
                     self.text_user,
                     self.text_password,
+                    self.dropdown_realm,
                     ft.Container(height=10),
                     self.text_signin,
                     ft.Container(height=20),
