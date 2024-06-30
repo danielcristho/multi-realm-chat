@@ -66,3 +66,18 @@ Tampilan
 
 ![Start](ui/assets/start.png)
 
+### Todo List
+
+- [x] Setup project
+
+- [x] Integrasi frontend dan backend
+
+- [x] Autentikasi (login & register)
+
+- [ ] Private chat
+
+- [ ] Group chat
+
+- [ ] Send files
+
+- [ ] Chat antar realm (private & group)
