@@ -72,7 +72,7 @@ Tampilan
 
 - [x] Integrasi frontend dan backend
 
-- [x] Autentikasi (login & register)
+- [x] Login & Register
 
 - [ ] Private chat
 
