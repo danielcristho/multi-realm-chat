@@ -1,4 +1,5 @@
 import flet as ft
+from create_group_form import *
 from signin_form import *
 from signup_form import *
 from users_db import *
@@ -66,6 +67,18 @@ def main(page: ft.Page):
             )
             send_to_server(json.dumps({"type": "login", "user": user}))
             page.update()
+            
+    def create_grp(group_name: str):
+        db = UsersDB()
+        if not db.read_db(group_name):
+            print("Group doesn't exist ...")
+            page.banner.open = True
+            page.update()
+        else:
+            print("Redirecting to list...")
+            page.route = "/list"
+            send_to_server(json.dumps({"type": "create_group", "group_name": group_name}))
+            page.update()
 
     def sign_up(user: str, password: str):
         db = UsersDB()
@@ -100,6 +113,10 @@ def main(page: ft.Page):
     def btn_signin(e):
         page.route = "/"
         page.update()
+        
+    def btn_join(e):
+        page.route = "/join"
+        page.update()
 
     def btn_signup(e):
         page.route = "/signup"
@@ -113,7 +130,7 @@ def main(page: ft.Page):
     def create_group_chat(e):
         def close_and_redirect(e):
           page.dialog.open = False
-          page.route = "/chat"
+          page.route = "/create-group"
           page.update()
 
         page.dialog = ft.AlertDialog(
@@ -203,6 +220,7 @@ def main(page: ft.Page):
 
     signin_UI = SignInForm(sign_in, btn_signup)
     signup_UI = SignUpForm(sign_up, btn_signin)
+    create_group = CreateGroup(create_grp, btn_join)
 
     chat = ft.ListView(
         expand=True,
@@ -276,6 +294,19 @@ def main(page: ft.Page):
                     [
                         principal_content,
                         signup_UI
+                    ],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER
+                )
+            )
+
+        if page.route == "/create-group":
+            page.clean()
+            page.add(
+                ft.Column(
+                    [
+                        principal_content,
+                        create_group
                     ],
                     alignment=ft.MainAxisAlignment.CENTER,
                     horizontal_alignment=ft.CrossAxisAlignment.CENTER
