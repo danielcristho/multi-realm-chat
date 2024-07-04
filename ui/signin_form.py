@@ -40,18 +40,19 @@ class SignInForm(ft.UserControl):
         self.dropdown_realm = ft.Dropdown(
             label="Choose Realm",
             options=[
+                ft.dropdown.Option("All Realm"),
                 ft.dropdown.Option("EarthRealm"),
                 ft.dropdown.Option("Edenia"),
                 ft.dropdown.Option("NetherRealm"),
             ]
         )
 
-        self.text_signup=ft.Row(controls=[ft.Text(value="Don't have a account?"),ft.TextButton(text="Sing Up Here",on_click=self.btn_signup)],alignment=ft.MainAxisAlignment.CENTER)
+        self.text_signup=ft.Row(controls=[ft.Text(value="Don't have a account?"),ft.TextButton(text="Sign Up Here",on_click=self.btn_signup)],alignment=ft.MainAxisAlignment.CENTER)
 
         self.text_signin=ft.ElevatedButton(text="Sign in",color=ft.colors.WHITE,width=150,height=50,on_click= self.btn_signin)
         return ft.Container(
             width=500,
-            height=560,
+            height=600,
             bgcolor=ft.colors.TEAL_400,
             padding=30,
             border_radius=10,

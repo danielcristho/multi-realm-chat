@@ -1,4 +1,5 @@
 import flet as ft
+from create_group_form import *
 from signin_form import *
 from signup_form import *
 from users_db import *
@@ -54,9 +55,9 @@ def main(page: ft.Page):
             page.banner.open = True
             page.update()
         else:
-            print("Redirecting to chat...")
+            print("Redirecting to list...")
             page.session.set("user", user)
-            page.route = "/chat"
+            page.route = "/list"
             page.pubsub.send_all(
                 Message(
                     user=user,
@@ -65,6 +66,18 @@ def main(page: ft.Page):
                 )
             )
             send_to_server(json.dumps({"type": "login", "user": user}))
+            page.update()
+            
+    def create_grp(group_name: str):
+        db = UsersDB()
+        if not db.read_db(group_name):
+            print("Group doesn't exist ...")
+            page.banner.open = True
+            page.update()
+        else:
+            print("Redirecting to list...")
+            page.route = "/list"
+            send_to_server(json.dumps({"type": "create_group", "group_name": group_name}))
             page.update()
 
     def sign_up(user: str, password: str):
@@ -100,6 +113,10 @@ def main(page: ft.Page):
     def btn_signin(e):
         page.route = "/"
         page.update()
+        
+    def btn_join(e):
+        page.route = "/join"
+        page.update()
 
     def btn_signup(e):
         page.route = "/signup"
@@ -110,6 +127,47 @@ def main(page: ft.Page):
         page.route = "/"
         page.update()
 
+    def create_group_chat(e):
+        def close_and_redirect(e):
+          page.dialog.open = False
+          page.route = "/create-group"
+          page.update()
+
+        page.dialog = ft.AlertDialog(
+            title=ft.Text("Send Group Message"),
+            content=ft.Text("Functionality to send a group message will be implemented here."),
+            actions=[ft.TextButton("OK", on_click=close_and_redirect)],
+        )
+        page.dialog.open = True
+        page.update()
+
+    def join_group_chat(e):
+        def close_and_redirect(e):
+          page.dialog.open = False
+          page.route = "/chat"
+          page.update()
+
+        page.dialog = ft.AlertDialog(
+            title=ft.Text("Send Group Message"),
+            content=ft.Text("Functionality to send a group message will be implemented here."),
+            actions=[ft.TextButton("OK", on_click=close_and_redirect)],
+        )
+        page.dialog.open = True
+        page.update()
+
+    def send_private_message(e):
+        def close_and_redirect(e):
+            page.dialog.open = False
+            page.route = "/chat"
+            page.update()
+
+        page.dialog = ft.AlertDialog(
+            title=ft.Text("Send Private Message"),
+            content=ft.Text("Functionality to send a private message will be implemented here."),
+            actions=[ft.TextButton("OK", on_click=close_and_redirect)],
+        )
+        page.dialog.open = True
+        page.update()
 
     """
     Application UI
@@ -162,6 +220,7 @@ def main(page: ft.Page):
 
     signin_UI = SignInForm(sign_in, btn_signup)
     signup_UI = SignUpForm(sign_up, btn_signin)
+    create_group = CreateGroup(create_grp, btn_join)
 
     chat = ft.ListView(
         expand=True,
@@ -241,6 +300,19 @@ def main(page: ft.Page):
                 )
             )
 
+        if page.route == "/create-group":
+            page.clean()
+            page.add(
+                ft.Column(
+                    [
+                        principal_content,
+                        create_group
+                    ],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER
+                )
+            )
+
         if page.route == "/chat":
             if page.session.contains_key("user"):
                 page.clean()
@@ -283,7 +355,23 @@ def main(page: ft.Page):
             else:
                 page.route = "/"
                 page.update()
+        
+        if page.route == "/list":
+            page.clean()
+            page.add(
+                ft.Column(
+                    [
+                        ft.TextButton("Send Private Message", on_click=send_private_message),
+                        ft.TextButton("Create New Group Chat", on_click=create_group_chat),
+                        ft.TextButton("Join Group Chat", on_click=join_group_chat),
+                    ],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                    spacing=20,
+                )
+            )
 
+    
     page.on_route_change = route_change
     page.add(
         ft.Column(
