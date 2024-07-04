@@ -2,6 +2,7 @@ import flet as ft
 from create_group_form import *
 from signin_form import *
 from signup_form import *
+from join_form import *
 from users_db import *
 from chat_message import *
 import socket
@@ -88,6 +89,22 @@ def main(page: ft.Page):
             db.write_group(group_name)
             page.update()
 
+    def join_grp(group_name: str):
+        db = UsersDB()
+        if not db.read_group(group_name):
+            print("Group doesn't exists ...")
+            page.banner.open = True
+            page.update()
+        else:
+            print("Redirecting to group chat...")
+            page.route = "/chat"
+            # send_to_server(json.dumps({"type": "create_group", "group_name": group_name}))
+            session = page.session.get("session")
+            print(session)
+            send_to_server(f"join_group {session} {group_name}")
+            db.write_group(group_name)
+            page.update()
+
     def sign_up(user: str, password: str):
         db = UsersDB()
         if db.write_db(user, password):
@@ -124,6 +141,10 @@ def main(page: ft.Page):
         
     def btn_join(e):
         page.route = "/join"
+        page.update()
+
+    def btn_create(e):
+        page.route = "/create-group"
         page.update()
 
     def btn_signup(e):
@@ -229,6 +250,7 @@ def main(page: ft.Page):
     signin_UI = SignInForm(sign_in, btn_signup)
     signup_UI = SignUpForm(sign_up, btn_signin)
     create_group = CreateGroup(create_grp, btn_join)
+    join_group = JoinForm(join_grp, btn_create)
 
     chat = ft.ListView(
         expand=True,
@@ -327,7 +349,7 @@ def main(page: ft.Page):
                 ft.Column(
                     [
                         principal_content,
-                        create_group
+                        join_group
                     ],
                     alignment=ft.MainAxisAlignment.CENTER,
                     horizontal_alignment=ft.CrossAxisAlignment.CENTER
