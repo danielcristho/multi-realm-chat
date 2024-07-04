@@ -22,7 +22,7 @@ class JoinForm(ft.UserControl):
         db = UsersDB()
         options = []
         for group in db.groups_list:
-            options.append(ft.dropdown.Option(group))
+            options.append(ft.dropdown.Option(group['name']))
         self.dropdown_realm = ft.Dropdown(
             label="Choose The Group",
             options=options
