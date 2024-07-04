@@ -1,8 +1,7 @@
 class UsersDB():
-    users_list=[{"user":"mario","password":"mario1"},{"user":"peach","password":"peach1"}]
+    users_list=[{"user":"mario","password":"mario1"}]
 
     def read_db(self,user_name:str,password:str):
-        #print("Iniciando sesion.... ")
         for i in self.users_list:
             if (i["user"]==user_name and i["password"]==password):
                 return True

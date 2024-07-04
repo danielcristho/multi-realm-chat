@@ -65,9 +65,9 @@ def main(page: ft.Page):
                     message_type="login_message",
                 )
             )
-            send_to_server(json.dumps({"type": "login", "user": user}))
+            send_to_server(json.dumps({"type": "login", "user": user, "password": password}))
             page.update()
-            
+
     def create_grp(group_name: str):
         db = UsersDB()
         if not db.read_db(group_name):
@@ -113,7 +113,7 @@ def main(page: ft.Page):
     def btn_signin(e):
         page.route = "/"
         page.update()
-        
+
     def btn_join(e):
         page.route = "/join"
         page.update()
@@ -355,7 +355,7 @@ def main(page: ft.Page):
             else:
                 page.route = "/"
                 page.update()
-        
+
         if page.route == "/list":
             page.clean()
             page.add(
@@ -371,7 +371,7 @@ def main(page: ft.Page):
                 )
             )
 
-    
+
     page.on_route_change = route_change
     page.add(
         ft.Column(
