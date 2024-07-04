@@ -9,7 +9,7 @@ Linux
 ```bash
 git clone https://github.com/danielcristho/multi-realm-chat.git && cd multi-realm-chat
 python3 -m venv .venv
-source env/bin/activate
+source .venv/bin/activate
 ```
 
 Windows
