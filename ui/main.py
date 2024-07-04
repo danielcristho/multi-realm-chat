@@ -65,20 +65,25 @@ def main(page: ft.Page):
                     message_type="login_message",
                 )
             )
-            send_to_server(json.dumps({"type": "login", "user": user}))
+            # send_to_server(json.dumps({"type": "auth", "username": user, "password": password}))
+            res = send_to_server(f"auth {user} {password}")
+            data = json.loads(res)
+            page.session.set("session", data['tokenid'])
+            print(data['status'], data['tokenid'])
             page.update()
             
     def create_grp(group_name: str):
         db = UsersDB()
-        if not db.read_db(group_name):
-            print("Group doesn't exist ...")
-            page.banner.open = True
-            page.update()
-        else:
-            print("Redirecting to list...")
-            page.route = "/list"
-            send_to_server(json.dumps({"type": "create_group", "group_name": group_name}))
-            page.update()
+        # if not db.read_db(group_name):
+        #     print("Group doesn't exist ...")
+        #     page.banner.open = True
+        #     page.update()
+        # else:
+        print("Redirecting to list...")
+        page.route = "/list"
+        # send_to_server(json.dumps({"type": "create_group", "group_name": group_name}))
+        send_to_server(f"create_group {group_name}")
+        page.update()
 
     def sign_up(user: str, password: str):
         db = UsersDB()

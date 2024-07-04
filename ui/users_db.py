@@ -1,5 +1,5 @@
 class UsersDB():
-    users_list=[{"user":"mario","password":"mario1"},{"user":"peach","password":"peach1"}]
+    users_list=[{"user":"mario","password":"mario1"},{"user":"peach","password":"peach1"},{"user": "messi", "password": "surabaya"},{"user" :"lineker", "password": "surabaya"}, {"user" :"henderson", "password": "surabaya"}]
 
     def read_db(self,user_name:str,password:str):
         #print("Iniciando sesion.... ")
