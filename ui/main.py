@@ -56,7 +56,7 @@ def main(page: ft.Page):
         else:
             print("Redirecting to chat...")
             page.session.set("user", user)
-            page.route = "/chat"
+            page.route = "/list"
             page.pubsub.send_all(
                 Message(
                     user=user,
@@ -110,6 +110,32 @@ def main(page: ft.Page):
         page.route = "/"
         page.update()
 
+    def create_group_chat(e):
+        page.dialog = ft.AlertDialog(
+            title=ft.Text("Create New Group Chat"),
+            content=ft.Text("Functionality to create a new group chat will be implemented here."),
+            actions=[ft.TextButton("OK", on_click=lambda e: page.dialog.dismiss())],
+        )
+        page.dialog.open = True
+        page.update()
+
+    def join_group_chat(e):
+        page.dialog = ft.AlertDialog(
+            title=ft.Text("Join Group Chat"),
+            content=ft.Text("Functionality to join an existing group chat will be implemented here."),
+            actions=[ft.TextButton("OK", on_click=lambda e: page.dialog.dismiss())],
+        )
+        page.dialog.open = True
+        page.update()
+
+    def send_private_message(e):
+        page.dialog = ft.AlertDialog(
+            title=ft.Text("Send Private Message"),
+            content=ft.Text("Functionality to send a private message will be implemented here."),
+            actions=[ft.TextButton("OK", on_click=lambda e: page.dialog.dismiss())],
+        )
+        page.dialog.open = True
+        page.update()
 
     """
     Application UI
@@ -283,7 +309,23 @@ def main(page: ft.Page):
             else:
                 page.route = "/"
                 page.update()
+        
+        if page.route == "/list":
+            page.clean()
+            page.add(
+                ft.Column(
+                    [
+                        ft.TextButton("Send Private Message", on_click=send_private_message),
+                        ft.TextButton("Create New Group Chat", on_click=create_group_chat),
+                        ft.TextButton("Join Group Chat", on_click=join_group_chat),
+                    ],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                    spacing=20,
+                )
+            )
 
+    
     page.on_route_change = route_change
     page.add(
         ft.Column(
