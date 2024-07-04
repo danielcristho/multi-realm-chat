@@ -144,6 +144,7 @@ class ChatClient:
     else:
         return "Error, {}".format(result['message'])
 
+
 if __name__=="__main__":
     cc = ChatClient()
     while True:
