@@ -1,5 +1,16 @@
 class UsersDB():
     users_list=[{"user":"mario","password":"mario1"},{"user":"peach","password":"peach1"},{"user": "messi", "password": "surabaya"},{"user" :"lineker", "password": "surabaya"}, {"user" :"henderson", "password": "surabaya"}]
+    groups_list=['test']
+    
+    def read_group(self,group_name:str):
+        for i in self.groups_list:
+            if i == group_name:
+                return True
+        return False
+    
+    def write_group(self,group_name:str):
+        self.groups_list.append(group_name)
+        return True
 
     def read_db(self,user_name:str,password:str):
         #print("Iniciando sesion.... ")

@@ -74,18 +74,19 @@ def main(page: ft.Page):
             
     def create_grp(group_name: str):
         db = UsersDB()
-        # if not db.read_db(group_name):
-        #     print("Group doesn't exist ...")
-        #     page.banner.open = True
-        #     page.update()
-        # else:
-        print("Redirecting to list...")
-        page.route = "/list"
-        # send_to_server(json.dumps({"type": "create_group", "group_name": group_name}))
-        session = page.session.get("session")
-        print(session)
-        send_to_server(f"create_group {session} {group_name}")
-        page.update()
+        if db.read_group(group_name):
+            print("Group already exists ...")
+            page.banner.open = True
+            page.update()
+        else:
+            print("Redirecting to list...")
+            page.route = "/list"
+            # send_to_server(json.dumps({"type": "create_group", "group_name": group_name}))
+            session = page.session.get("session")
+            print(session)
+            send_to_server(f"create_group {session} {group_name}")
+            db.write_group(group_name)
+            page.update()
 
     def sign_up(user: str, password: str):
         db = UsersDB()
@@ -151,7 +152,7 @@ def main(page: ft.Page):
     def join_group_chat(e):
         def close_and_redirect(e):
           page.dialog.open = False
-          page.route = "/chat"
+          page.route = "/join"
           page.update()
 
         page.dialog = ft.AlertDialog(
@@ -249,7 +250,7 @@ def main(page: ft.Page):
     page.banner = ft.Banner(
         bgcolor=ft.colors.BLACK45,
         leading=ft.Icon(ft.icons.ERROR, color=ft.colors.RED, size=40),
-        content=ft.Text("Log in failed, Incorrect User Name or Password"),
+        content=ft.Text("An error occured!"),
         actions=[
             ft.TextButton("Ok", on_click=close_banner),
         ],
@@ -308,6 +309,19 @@ def main(page: ft.Page):
             )
 
         if page.route == "/create-group":
+            page.clean()
+            page.add(
+                ft.Column(
+                    [
+                        principal_content,
+                        create_group
+                    ],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER
+                )
+            )
+
+        if page.route == "/join":
             page.clean()
             page.add(
                 ft.Column(
