@@ -54,7 +54,7 @@ def main(page: ft.Page):
             page.banner.open = True
             page.update()
         else:
-            print("Redirecting to chat...")
+            print("Redirecting to list...")
             page.session.set("user", user)
             page.route = "/list"
             page.pubsub.send_all(
@@ -111,28 +111,43 @@ def main(page: ft.Page):
         page.update()
 
     def create_group_chat(e):
+        def close_and_redirect(e):
+          page.dialog.open = False
+          page.route = "/chat"
+          page.update()
+
         page.dialog = ft.AlertDialog(
-            title=ft.Text("Create New Group Chat"),
-            content=ft.Text("Functionality to create a new group chat will be implemented here."),
-            actions=[ft.TextButton("OK", on_click=lambda e: page.dialog.dismiss())],
+            title=ft.Text("Send Group Message"),
+            content=ft.Text("Functionality to send a group message will be implemented here."),
+            actions=[ft.TextButton("OK", on_click=close_and_redirect)],
         )
         page.dialog.open = True
         page.update()
 
     def join_group_chat(e):
+        def close_and_redirect(e):
+          page.dialog.open = False
+          page.route = "/chat"
+          page.update()
+
         page.dialog = ft.AlertDialog(
-            title=ft.Text("Join Group Chat"),
-            content=ft.Text("Functionality to join an existing group chat will be implemented here."),
-            actions=[ft.TextButton("OK", on_click=lambda e: page.dialog.dismiss())],
+            title=ft.Text("Send Group Message"),
+            content=ft.Text("Functionality to send a group message will be implemented here."),
+            actions=[ft.TextButton("OK", on_click=close_and_redirect)],
         )
         page.dialog.open = True
         page.update()
 
     def send_private_message(e):
+        def close_and_redirect(e):
+            page.dialog.open = False
+            page.route = "/chat"
+            page.update()
+
         page.dialog = ft.AlertDialog(
             title=ft.Text("Send Private Message"),
             content=ft.Text("Functionality to send a private message will be implemented here."),
-            actions=[ft.TextButton("OK", on_click=lambda e: page.dialog.dismiss())],
+            actions=[ft.TextButton("OK", on_click=close_and_redirect)],
         )
         page.dialog.open = True
         page.update()
