@@ -82,7 +82,9 @@ def main(page: ft.Page):
         print("Redirecting to list...")
         page.route = "/list"
         # send_to_server(json.dumps({"type": "create_group", "group_name": group_name}))
-        send_to_server(f"create_group {group_name}")
+        session = page.session.get("session")
+        print(session)
+        send_to_server(f"create_group {session} {group_name}")
         page.update()
 
     def sign_up(user: str, password: str):
