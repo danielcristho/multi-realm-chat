@@ -1,29 +1,31 @@
 import flet as ft
+
 class Message():
-    def __init__(self,user:str,text:str,message_type:str):
-        self.user=user
-        self.text=text
-        self.message_type=message_type
+    def __init__(self, user: str, text: str, message_type: str, file_content: str = None):
+        self.user = user
+        self.text = text
+        self.message_type = message_type
+        self.file_content = file_content
 
 class ChatMessage(ft.Row):
     def __init__(self, message: Message):
         super().__init__()
-        self.vertical_alignment="start"
-        self.controls=[
-                ft.CircleAvatar(
-                    content=ft.Text(self.get_initials(message.user)),
-                    color=ft.colors.WHITE,
-                    bgcolor=self.get_avatar_color(message.user),
-                ),
-                ft.Column(
-                    [
-                        ft.Text(message.user, weight="bold"),
-                        ft.Text(message.text, selectable=True),
-                    ],
-                    tight=True,
-                    spacing=5,
-                ),
-            ]
+        self.vertical_alignment = "start"
+        self.controls = [
+            ft.CircleAvatar(
+                content=ft.Text(self.get_initials(message.user)),
+                color=ft.colors.WHITE,
+                bgcolor=self.get_avatar_color(message.user),
+            ),
+            ft.Column(
+                [
+                    ft.Text(message.user, weight="bold"),
+                    ft.Text(message.text, selectable=True),
+                ],
+                tight=True,
+                spacing=5,
+            ),
+        ]
 
     def get_initials(self, user: str):
         return user[:1].capitalize()

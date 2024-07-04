@@ -5,6 +5,9 @@ from users_db import *
 from chat_message import *
 import socket
 import json
+import base64
+import os
+import time
 
 server_ip = '127.0.0.1'
 server_port = 8889
@@ -79,6 +82,14 @@ def main(page: ft.Page):
             m = ChatMessage(message)
         elif message.message_type == "login_message":
             m = ft.Text(message.text, italic=True, color=ft.colors.WHITE, size=12)
+        elif message.message_type == "file_message":
+            m = ft.Column([
+                ft.Text(f"{message.user} sent a file:", italic=True, color=ft.colors.WHITE, size=12),
+                ft.ElevatedButton(
+                    text=f"Download {message.text}",
+                    on_click=lambda _: download_file(message.file_content, message.text)
+                )
+            ])
         chat.controls.append(m)
         page.update()
 
@@ -97,6 +108,91 @@ def main(page: ft.Page):
         new_message.value = ""
         page.update()
 
+    def send_file(e: ft.FilePickerResultEvent):
+        print("send_file called")
+        if e.files:
+            print(f"Number of files: {len(e.files)}")
+            for f in e.files:
+                print(f"File info: {f}")
+                file_name = f.name
+                
+                if f.path:
+                    with open(f.path, "rb") as file:
+                        file_bytes = file.read()
+                    
+                    file_contents = base64.b64encode(file_bytes).decode('utf-8')
+                    
+                    page.pubsub.send_all(
+                        Message(
+                            user=page.session.get("user"),
+                            text=file_name,
+                            message_type="file_message",
+                            file_content=file_contents
+                        )
+                    )
+                    send_to_server(json.dumps({
+                        "type": "file",
+                        "user": page.session.get("user"),
+                        "filename": file_name,
+                        "file_content": file_contents
+                    }))
+                else:
+                    upload_files = [
+                        ft.FilePickerUploadFile(
+                            f.name,
+                            upload_url=page.get_upload_url(f.name, 600),
+                        )
+                    ]
+                    upload_result = file_picker.upload(upload_files)
+                    
+                    if upload_result:
+                        while not upload_result.completed:
+                            time.sleep(0.1)
+                        
+                        # Get the uploaded file path
+                        uploaded_file_path = os.path.join(page.upload_dir, f.name)
+                        with open(uploaded_file_path, "rb") as file:
+                            file_bytes = file.read()
+                        
+                        file_contents = base64.b64encode(file_bytes).decode('utf-8')
+                        
+                        page.pubsub.send_all(
+                            Message(
+                                user=page.session.get("user"),
+                                text=file_name,
+                                message_type="file_message",
+                                file_content=file_contents
+                            )
+                        )
+                        send_to_server(json.dumps({
+                            "type": "file",
+                            "user": page.session.get("user"),
+                            "filename": file_name,
+                            "file_content": file_contents
+                        }))
+                    else:
+                        print("Upload failed or was cancelled.")
+        
+        page.update()
+
+
+    def download_file(file_content, filename):
+        decoded_content = base64.b64decode(file_content)
+        if page.web:  # For web environment
+            page.launch_url(page.get_download_url(filename, decoded_content))
+        else:  # For desktop environment
+            download_path = os.path.join(os.path.expanduser("~"), "Downloads", filename)
+            with open(download_path, "wb") as f:
+                f.write(decoded_content)
+        
+        page.snack_bar = ft.SnackBar(content=ft.Text(f"File {filename} downloaded successfully!"))
+        page.snack_bar.open = True
+        page.update()
+
+    file_picker = ft.FilePicker(on_result=send_file)
+    page.overlay.append(file_picker)
+
+
     def btn_signin(e):
         page.route = "/"
         page.update()
@@ -109,7 +205,6 @@ def main(page: ft.Page):
         page.session.remove("user")
         page.route = "/"
         page.update()
-
 
     """
     Application UI
@@ -272,6 +367,11 @@ def main(page: ft.Page):
                             emoji_list,
                             new_message,
                             ft.IconButton(
+                                icon=ft.icons.ATTACH_FILE,
+                                tooltip="Send file",
+                                on_click=lambda _: file_picker.pick_files(allow_multiple=True)
+                            ),
+                            ft.IconButton(
                                 icon=ft.icons.SEND_ROUNDED,
                                 tooltip="Send message",
                                 on_click=send_message_click,
@@ -279,7 +379,6 @@ def main(page: ft.Page):
                         ],
                     )
                 )
-
             else:
                 page.route = "/"
                 page.update()
@@ -296,4 +395,11 @@ def main(page: ft.Page):
         )
     )
 
-ft.app(target=main, view=ft.WEB_BROWSER)
+if __name__ == "__main__":
+    os.environ["FLET_SECRET_KEY"] = os.urandom(16).hex()
+    
+    ft.app(
+        target=main,
+        view=ft.WEB_BROWSER,
+        upload_dir="uploads"
+    )

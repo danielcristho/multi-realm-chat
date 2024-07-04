@@ -5,6 +5,7 @@ import threading
 import time
 import sys
 import json
+import base64
 
 logging.basicConfig(level=logging.WARNING)
 
@@ -17,6 +18,8 @@ class Chat:
             logging.warning(f"{data['user']} signed up")
         elif data['type'] == 'message':
             logging.warning(f"Message from {data['user']}: {data['message']}")
+        elif data['type'] == 'file':
+            logging.warning(f"File upload from {data['user']}: {data['filename']}")
         return {"status": "ok"}
 
 chatserver = Chat()
@@ -38,7 +41,7 @@ class ProcessTheClient(threading.Thread):
                     logging.warning(f"data dari client: {rcv}")
                     hasil = json.dumps(chatserver.proses(rcv))
                     hasil = hasil + "\r\n\r\n"
-                    logging.warning(f"balas ke  client: {hasil}")
+                    logging.warning(f"balas ke client: {hasil}")
                     self.connection.sendall(hasil.encode())
                     rcv = ""
             else:
@@ -58,7 +61,6 @@ class Server(threading.Thread):
         while True:
             self.connection, self.client_address = self.my_socket.accept()
             logging.warning(f"connection from {self.client_address}")
-
             clt = ProcessTheClient(self.connection, self.client_address)
             clt.start()
             self.the_clients.append(clt)
