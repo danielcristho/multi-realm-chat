@@ -275,9 +275,11 @@ chat = Chat()
 #response = chat.send_file_private('1234567890', 'messi', 'henderson', 'path/to/file.txt')
 #print(response)
 
+
 # Mengirimkan file secara group
 #response = chat.send_file_group('1234567890', 'messi', 'my_group', 'path/to/file.txt')
 #print(response)
+
 
 # Mendapatkan daftar pesan file dalam grup
 #response = chat.get_group_file('1234567890', 'my_group')
