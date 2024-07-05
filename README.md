@@ -62,10 +62,6 @@ cd ui
 flet run
 ```
 
-Tampilan
-
-![Start](ui/assets/start.png)
-
 ### Todo List
 
 - [x] Setup project
@@ -74,10 +70,10 @@ Tampilan
 
 - [x] Login & Register
 
-- [ ] Private chat
+- [x] Private chat
 
-- [ ] Group chat
+- [x] Group chat
 
-- [ ] Send files
+- [x] Send files
 
-- [ ] Chat antar realm (private & group)
+- [x] Chat antar realm (private & group)
