@@ -17,7 +17,10 @@ class Chat:
             logging.warning(f"{data['user']} signed up")
         elif data['type'] == 'message':
             logging.warning(f"Message from {data['user']}: {data['message']}")
+        elif data['type'] == 'file':
+            logging.warning(f"File upload from {data['user']}: {data['filename']}")
         return {"status": "ok"}
+
 
 chatserver = Chat()
 
@@ -38,7 +41,8 @@ class ProcessTheClient(threading.Thread):
                     logging.warning(f"data dari client: {rcv}")
                     hasil = json.dumps(chatserver.proses(rcv))
                     hasil = hasil + "\r\n\r\n"
-                    logging.warning(f"balas ke  client: {hasil}")
+                    logging.warning(f"balas ke client: {hasil}")
+                    # logging.warning(f"balas ke  client: {hasil}")
                     self.connection.sendall(hasil.encode())
                     rcv = ""
             else:

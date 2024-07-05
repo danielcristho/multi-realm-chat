@@ -1,9 +1,10 @@
 import flet as ft
 class Message():
-    def __init__(self,user:str,text:str,message_type:str):
-        self.user=user
-        self.text=text
-        self.message_type=message_type
+    def __init__(self, user: str, text: str, message_type: str, file_content: str = None):
+        self.user = user
+        self.text = text
+        self.message_type = message_type
+        self.file_content = file_content
 
 class ChatMessage(ft.Row):
     def __init__(self, message: Message):
