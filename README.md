@@ -74,10 +74,22 @@ Tampilan
 
 - [x] Login & Register
 
-- [ ] Private chat
+- [X] Private chat
 
 - [ ] Group chat
 
-- [ ] Send files
+- [X] Send files
 
 - [ ] Chat antar realm (private & group)
+
+
+### Kontribusi
+
+| No  | Name                               | Fitur yang dikerjakana |
+|-----|------------------------------------|---------|
+|1    |Daniel                              | Resgister, Login, & Private chat antar realm|
+|2    |Khairuddin                          | Upload & Donwload file|
+|3    |Yehezkiel                           | Create & Join Group|
+|4    |Vito                                | Dokumentasi protokol chat (private chat sesama realm, group, user auth/login)|
+|
+
