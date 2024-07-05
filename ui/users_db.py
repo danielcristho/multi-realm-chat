@@ -8,6 +8,12 @@ class UsersDB():
                 return True
         return False
     
+    def get_messages(self,group_name):
+        for i in self.groups_list:
+            if i['name'] == group_name:
+                return i['messages']
+        return False
+    
     def set_messages(self,group_name:str,group_messages):
         for index, i in enumerate(self.groups_list):
             if i['name'] == group_name:

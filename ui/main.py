@@ -106,13 +106,19 @@ def main(page: ft.Page):
             print("Redirecting to group chat...")
             page.route = "/chat"
             # send_to_server(json.dumps({"type": "create_group", "group_name": group_name}))
-            page.session.set("group", group_name)
-            messages = get_group_messages(group_name=group_name)
-            db.set_messages(group_name=group_name, group_messages=messages)
             session = page.session.get("session")
             print(session)
             send_to_server(f"join_group {session} {group_name}")
             db.write_group(group_name)
+            page.session.set("group", group_name)
+            messages = get_group_messages(group_name=group_name)
+            db.set_messages(group_name=group_name, group_messages=messages)
+            # implement messages to ui
+            for message in messages:
+                print(message)
+                msg = Message(user=message['msg_from'], text=message['msg'], message_type="chat_message")
+                m = ChatMessage(msg)
+                chat.controls.append(m)
             page.update()
 
     def sign_up(user: str, password: str):
@@ -128,6 +134,8 @@ def main(page: ft.Page):
         elif message.message_type == "login_message":
             m = ft.Text(message.text, italic=True, color=ft.colors.WHITE, size=12)
         chat.controls.append(m)
+        # m = ChatMessage(message)
+        # chat.controls.append(m)
         page.update()
 
     page.pubsub.subscribe(on_message)
@@ -141,7 +149,11 @@ def main(page: ft.Page):
                 message_type="chat_message",
             )
         )
-        send_to_server(json.dumps({"type": "message", "user": page.session.get("user"), "message": message}))
+        group_name = page.session.get("group")
+        session = page.session.get("session")
+        send_to_server(f"send_group {session} {group_name} {message}")
+
+        # send_to_server(json.dumps({"type": "message", "user": page.session.get("user"), "message": message}))
         new_message.value = ""
         page.update()
 
