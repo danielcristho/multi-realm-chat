@@ -20,7 +20,8 @@ def main(page: ft.Page):
         username = sign_up_username_input.value
         password = sign_up_password_input.value
         nama = sign_up_nama_input.value
-        response = client.proses(f'signup {username} {password} {nama}')
+        negara = sign_up_negara_input.value
+        response = client.proses(f'register {username} {password} {nama} {negara}')
         
         if "account created" in response:
             result_text.value = "Account created successfully. Please log in."
@@ -63,7 +64,7 @@ def main(page: ft.Page):
         username_to_input = ft.TextField(label="Username to", width=300, color=ft.colors.BLACK)
         file_input = ft.TextField(label="File Path", width=300, color=ft.colors.BLACK)
         send_button = ft.ElevatedButton(text="Send", on_click=lambda e: on_send_file(username_to_input.value, file_input.value))
-        back_button = ft.ElevatedButton(text="Back to Dashboard", on_click=lambda _: show_dashboard_page(username_input.value))
+        back_button = ft.OutlinedButton(text="Back to Private Message", on_click=show_private_message_button_page)
 
         send_file_card = ft.Container(
             content=ft.Column(
@@ -111,7 +112,7 @@ def main(page: ft.Page):
         group_name_input = ft.TextField(label="Group Name", width=300, color=ft.colors.BLACK)
         file_input = ft.TextField(label="File Path", width=300, color=ft.colors.BLACK)
         send_button = ft.ElevatedButton(text="Send", on_click=lambda e: on_send_group_file(group_name_input.value, file_input.value))
-        back_button = ft.ElevatedButton(text="Back to Dashboard", on_click=lambda _: show_dashboard_page(username_input.value))
+        back_button = ft.OutlinedButton(text="Back to Group Message", on_click=show_group_message_page)
 
         send_group_file_card = ft.Container(
             content=ft.Column(
@@ -178,7 +179,7 @@ def main(page: ft.Page):
         username_to_input = ft.TextField(label="Username to", width=300, color=ft.colors.BLACK)
         message_input = ft.TextField(label="Message", width=300, color=ft.colors.BLACK)
         send_button = ft.ElevatedButton(text="Send", on_click=lambda e: on_send_message(username_to_input.value, message_input.value))
-        back_button = ft.OutlinedButton(text="Back to Dashboard", on_click=show_private_message_button_page)
+        back_button = ft.OutlinedButton(text="Back to Private Message", on_click=show_private_message_button_page)
 
         private_message_card = ft.Container(
             content=ft.Column(
@@ -546,7 +547,7 @@ def main(page: ft.Page):
         page.controls.clear()
         realm_text = ft.Text("Realm 1", size=48, weight=ft.FontWeight.BOLD, text_align="center")
         header_text = ft.Text("Sign In", size=32, weight=ft.FontWeight.BOLD, text_align="center", color=ft.colors.BLACK)
-        sign_up_button = ft.OutlinedButton(text="Don't have an account? Sign up", on_click=show_sign_up_page, style=ft.ButtonStyle(color=ft.colors.WHITE))
+        sign_up_button = ft.OutlinedButton(text="Don't have an account? Sign up", on_click=show_sign_up_page)
 
         sign_in_card = ft.Container(
             content=ft.Column(
@@ -589,7 +590,7 @@ def main(page: ft.Page):
 
         realm_text = ft.Text("Realm 1", size=48, weight=ft.FontWeight.BOLD, text_align="center")
         header_text = ft.Text("Sign Up", size=40, weight=ft.FontWeight.BOLD, text_align="center", color=ft.colors.BLACK)
-        sign_in_button = ft.OutlinedButton(text="Already have an account? Sign in", on_click=show_login_page, style=ft.ButtonStyle(color=ft.colors.WHITE))
+        sign_in_button = ft.OutlinedButton(text="Already have an account? Sign in", on_click=show_login_page)
 
         sign_up_card = ft.Container(
             content=ft.Column(
@@ -598,6 +599,7 @@ def main(page: ft.Page):
                     sign_up_username_input,
                     sign_up_password_input,
                     sign_up_nama_input,
+                    sign_up_negara_input,
                     sign_up_button,
                     sign_up_result_text,
                 ],
@@ -700,7 +702,7 @@ def main(page: ft.Page):
 
         group_name_input = ft.TextField(label="Group Name", width=300, color=ft.colors.BLACK)
         fetch_inbox_button = ft.ElevatedButton(text="Fetch Group Inbox Files", on_click=lambda e: on_fetch_group_inbox_files(group_name_input.value))
-        back_button = ft.OutlinedButton(text="Back to Dashboard", on_click=lambda _: show_dashboard_page(username_input.value))
+        back_button = ft.OutlinedButton(text="Back to Group Message", on_click=show_group_message_page)
 
         inbox_group_file_card = ft.Container(
             content=ft.Column(
@@ -776,7 +778,7 @@ def main(page: ft.Page):
                     )
                     inbox_list.controls.append(file_container)
 
-            back_button = ft.OutlinedButton(text="Back to Dashboard", on_click=lambda _: show_dashboard_page(username_input.value))
+            back_button = ft.OutlinedButton(text="Back to Private Message", on_click=show_private_message_button_page)
 
             inbox_file_card = ft.Container(
                 content=ft.Column(
@@ -834,6 +836,7 @@ def main(page: ft.Page):
     sign_up_username_input = ft.TextField(label="Username", width=300, color=ft.colors.BLACK)
     sign_up_password_input = ft.TextField(label="Password", password=True, width=300, color=ft.colors.BLACK)
     sign_up_nama_input = ft.TextField(label="Nama", width=300, color=ft.colors.BLACK)
+    sign_up_negara_input = ft.TextField(label="Negara", width=300, color=ft.colors.BLACK)
     sign_up_button = ft.ElevatedButton(text="Sign Up", on_click=on_sign_up)
     sign_up_result_text = ft.Text(color=ft.colors.BLACK)
 

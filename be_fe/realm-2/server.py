@@ -9,8 +9,8 @@ from chat import Chat
 from client import ChatClient
 
 
-REALM_IP = '127.0.0.1'
-REALM_PORT = 12378
+REALM_IP = '172.18.0.2'
+REALM_PORT = 22222
 chatserver = Chat(REALM_IP, REALM_PORT)
 
 from file_protocol import FileProtocol

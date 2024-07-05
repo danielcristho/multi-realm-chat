@@ -6,8 +6,8 @@ import base64
 # i want to use this ChatClient class in other python file, how?
 
 
-TARGET_IP = "127.0.0.1"
-TARGET_PORT = 12377
+TARGET_IP = "172.18.0.4"
+TARGET_PORT = 11111
 
 '''
 implemented function:
@@ -107,6 +107,13 @@ class ChatClient:
             elif (command=='inbox_file_group'):
                 groupname=j[1].strip()
                 return self.inbox_file_group(groupname)
+
+            elif command == 'register':
+                username = j[1].strip()
+                password = j[2].strip()
+                nama = j[3].strip()
+                negara = j[4].strip()
+                return self.register(username, password, nama, negara)
             
             # file unimplemented
             # TODO
@@ -285,7 +292,13 @@ class ChatClient:
             return "{}" . format(json.dumps(result['messages']))
         else:
             return "Error, {}" . format(result['message'])
-        
+    def register(self, username, password, nama, negara):
+        string = "register {} {} {} {} \r\n".format(username, password, nama, negara)
+        result = self.sendstring(string)
+        if result['status'] == 'OK':
+            return "User {} registered successfully".format(username)
+        else:
+            return "Error, {}".format(result['message'])
     def inbox_file(self):
         if (self.tokenid==""):
             return "Error, not authorized"
@@ -426,6 +439,11 @@ class ChatClient:
             return "{}" . format(json.dumps(result))
         else:
             return "Error, {}" . format(result['message'])
+        
+        
+    
+
+
 
 if __name__=="__main__":
     cc = ChatClient()

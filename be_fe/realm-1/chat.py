@@ -39,18 +39,16 @@ class Chat:
 		self.users = {}
 		self.groups = {}
 		self.realm = { 'ip': REALM_IP, 'port': REALM_PORT}
-		self.known_realms = [('172.18.0.3', 1112)]
-
+		self.known_realms = [('172.18.0.2', 22222)]
+		
 		self.temp_outgoing={}
 
 
 		# initialize users
-		self.users['messi']={ 'nama': 'Lionel Messi', 'negara': 'Argentina', 'password': 'surabaya', 'incoming' : {},'outgoing': {}, 'incoming_file':{}, 'group': [], 'realm': self.realm}
-		self.users['dev']={ 'nama': 'dev', 'negara': 'dev', 'password': 'dev', 'incoming' : {}, 'outgoing': {}, 'incoming_file' : {},  'group': [], 'realm': self.realm}
 		self.users['henderson']={ 'nama': 'Jordan Henderson', 'negara': 'Inggris', 'password': 'surabaya', 'incoming': {}, 'outgoing': {}, 'incoming_file' : {},  'group': [], 'realm': self.realm}
-		self.users['lineker']={ 'nama': 'Gary Lineker', 'negara': 'Inggris', 'password': 'surabaya','incoming': {}, 'outgoing':{}, 'incoming_file' : {},  'group': [], 'realm': self.realm}
+		self.users['ronaldo']={ 'nama': 'Cristiano Ronaldo', 'negara': 'Inggris', 'password': 'surabaya','incoming': {}, 'outgoing':{}, 'incoming_file' : {},  'group': [], 'realm': self.realm}
 
-		self.groups['group1'] = { 'nama': 'grup inggris', 'incoming': {}, 'outgoing': {}, 'incoming_file' : {}, 'users': ['henderson','lineker'], 'realm': self.realm}
+		self.groups['group2'] = { 'nama': 'grup inggris', 'incoming': {}, 'outgoing': {}, 'incoming_file' : {}, 'users': ['henderson','lineker'], 'realm': self.realm}
 	def proses(self,data):
 		is_different_realm = False
 		j=data.split(" ")
@@ -79,7 +77,7 @@ class Chat:
 					usernamefrom = sessionid.split('=')[1]
 				logging.warning("SEND: session {} send message from {} to {}" . format(sessionid, usernamefrom,usernameto))
 				return self.send_message(sessionid,usernamefrom,usernameto,message)
-			
+        
 			elif (command=='get_all_users'):
 				sessionid = j[1].strip()
 				logging.warning("GET ALL USERS: {}" . format(sessionid))
@@ -174,6 +172,14 @@ class Chat:
 				groupname = j[2].strip()
 				logging.warning("INBOX FILE GROUP: {}" . format(groupname))
 				return self.get_inbox_file_group(groupname)
+            
+			elif (command == 'register'):
+				username = j[1].strip()
+				password = j[2].strip()
+				nama = j[3].strip()
+				negara = j[4].strip()
+				logging.warning("REGISTER: register {} {} {} {}".format(username, password, nama, negara))
+				return self.register_user(username, password, nama, negara)
 
 			else:
 				return {'status': 'ERROR', 'message': '**Protocol Tidak Benar'}
@@ -181,6 +187,21 @@ class Chat:
 			return { 'status': 'ERROR', 'message' : 'Informasi tidak ditemukan'}
 		except IndexError:
 			return {'status': 'ERROR', 'message': '--Protocol Tidak Benar'}
+
+	def register_user(self, username, password, nama, negara):
+		if username in self.users:
+			return {'status': 'ERROR', 'message': 'User Sudah Ada'}
+		self.users[username] = {
+            'nama': nama,
+            'negara': negara,
+            'password': password,
+            'incoming': {},
+            'outgoing': {},
+            'incoming_file': {},
+            'group': [],
+            'realm': self.realm
+        }
+		return {'status': 'OK', 'message': 'User Berhasil Didaftarkan'}
 		
 	def pop_temp(self, username):
 		message = self.temp_incoming[username]
@@ -700,35 +721,3 @@ if __name__=="__main__":
 	print(j.get_inbox('messi'))
 	print("isi mailbox dari henderson")
 	print(j.get_inbox('henderson'))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
