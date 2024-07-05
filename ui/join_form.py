@@ -10,7 +10,7 @@ class JoinForm(ft.UserControl):
         #Route to signup Form
         self.btn_create = btn_create
 
-    def btn_signup(self, e):
+    def btn_join(self, e):
         if not self.dropdown_realm.value:
             self.dropdown_realm.error_text="Please select a group!"
             self.dropdown_realm.update()
@@ -27,7 +27,7 @@ class JoinForm(ft.UserControl):
             label="Choose The Group",
             options=options
         )
-        self.text_join=ft.ElevatedButton(text="Join Group",color=ft.colors.WHITE,width=150,height=50,on_click= self.btn_signup)
+        self.text_join=ft.ElevatedButton(text="Join Group",color=ft.colors.WHITE,width=150,height=50,on_click=self.btn_join)
         self.text_create=ft.Row(controls=[ft.Text(value="Want to create a new group?"),ft.TextButton(text="Create here",on_click=self.btn_create)],alignment=ft.MainAxisAlignment.CENTER)
 
         return ft.Container(

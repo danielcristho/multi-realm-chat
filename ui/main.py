@@ -88,6 +88,13 @@ def main(page: ft.Page):
             send_to_server(f"create_group {session} {group_name}")
             db.write_group(group_name)
             page.update()
+            
+    def get_group_messages(group_name:str):
+        sessid = page.session.get("session")
+        res = send_to_server(f"group_inbox {sessid} {group_name}")
+        print(res)
+        data = json.loads(res)
+        return data['messages']
 
     def join_grp(group_name: str):
         db = UsersDB()
@@ -99,6 +106,9 @@ def main(page: ft.Page):
             print("Redirecting to group chat...")
             page.route = "/chat"
             # send_to_server(json.dumps({"type": "create_group", "group_name": group_name}))
+            page.session.set("group", group_name)
+            messages = get_group_messages(group_name=group_name)
+            db.set_messages(group_name=group_name, group_messages=messages)
             session = page.session.get("session")
             print(session)
             send_to_server(f"join_group {session} {group_name}")

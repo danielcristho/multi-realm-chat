@@ -8,6 +8,13 @@ class UsersDB():
                 return True
         return False
     
+    def set_messages(self,group_name:str,group_messages):
+        for index, i in enumerate(self.groups_list):
+            if i['name'] == group_name:
+                self.groups_list[index] = {"name": group_name, "messages": group_messages}
+                return True
+        return False
+    
     def write_group(self,group_name:str):
         self.groups_list.append({"name": group_name, "messages": []})
         return True
